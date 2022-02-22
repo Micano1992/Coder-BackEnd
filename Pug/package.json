@@ -1,0 +1,17 @@
+{
+  "dependencies": {
+    "express": "^4.17.3",
+    "node": "^17.4.0"
+  },
+  "name": "pug",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

@@ -21,8 +21,9 @@ app.engine(
         defaultLayout: 'index.hbs',
     })
 );
-app.set("view engine", "hbs");
-app.set("views", "./views");
+
+app.set('views', './views');
+app.set('view engine', 'pug');
 
 
 //Routes

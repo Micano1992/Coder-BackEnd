@@ -1,7 +1,7 @@
 const express = require('express')
 const apiRoutes = require('./routers/index')
 
-const PORT = process.env.PORT || 8080
+const PORT = process.env.PORT || 8081
 
 
 const app = express()
@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: true }))
 
 
 app.set('views', './views');
-app.set('view engine', 'pug');
+app.set('view engine', 'ejs');
 
 
 //Routes

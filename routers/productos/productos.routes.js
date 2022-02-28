@@ -11,7 +11,7 @@ let ultimoId = 0
 
 router.get('/', (req, res) => {
 
-    res.render("vista", {
+    res.render("layouts/index", {
         productos: productos,
         hayProductos: productos.length
     });
@@ -38,7 +38,7 @@ router.post('/', (req, res) => {
 
     productos.push({ id: ultimoId, title: title, price: price, url: url })
 
-    res.redirect('/productos')
+    res.redirect('/')
 
 })
 

@@ -1,23 +1,4 @@
-<style>
-    .table td,
-    .table th {
-        vertical-align: middle;
-    }
-
-    hr {
-        background-color: #ddd;
-    }
-
-    .jumbotron {
-        min-height: 100vh;
-    }
-</style>
-
 <div class="jumbotron">
-    <div class="py-5 text-center">
-        <h1>Vista de Productos</h1>
-    </div>
-    <br>
 
     {{#if hayProductos}}
     <div class="table-responsive">
@@ -39,8 +20,5 @@
     {{else}}
     <h3 class="alert alert-warning">No se encontraron productos</h3>
     {{/if}}
-    <br>
-    <div class="text-center">
-        <a href="/" type="button" class="btn btn-secondary">Cargar un nuevo producto</a>
 
-    </div>
+</div>

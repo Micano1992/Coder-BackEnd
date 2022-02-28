@@ -1,0 +1,26 @@
+[
+  {
+    "nombre": "Cuaderno",
+    "precio": 11,
+    "imagen": "https://cdn3.iconfinder.com/data/icons/education-209/64/book-note-paper-school-128.png",
+    "id": "1"
+  },
+  {
+    "nombre": "asdas",
+    "precio": "12312",
+    "imagen": "asdas",
+    "id": "2"
+  },
+  {
+    "nombre": "asdas",
+    "precio": "12312",
+    "imagen": "asdas",
+    "id": "3"
+  },
+  {
+    "nombre": "asdas",
+    "precio": "12312",
+    "imagen": "asdas",
+    "id": "4"
+  }
+]

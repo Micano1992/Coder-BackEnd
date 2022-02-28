@@ -6,11 +6,8 @@ const router = express.Router()
 
 //Middleware
 
-
-
 //Routes
-router.use('/productos', productosRoutes)
-
+router.use('/', productosRoutes)
 
 
 module.exports = router;

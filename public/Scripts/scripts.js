@@ -13,13 +13,21 @@ formAltaProducto.addEventListener('submit', e => {
     formAltaProducto.reset();
 })
 
+
 socket.on('getProductos', productos => {
-    return fetch('views/partials/index.hbs')
+    makeHtmlTable(productos).then(html => {
+
+        document.getElementById('productos').innerHTML = html
+    })
+});
+
+function makeHtmlTable(productos) {
+    return fetch('views/partials/tablaProductos.hbs')
         .then(respuesta => respuesta.text())
         .then(plantilla => {
             const template = Handlebars.compile(plantilla);
-            hayProductos = productos.lenght
-            const html = template({ productos, hayProductos })
+            let hayProductos = productos.length
+            const html = template({ hayProductos, productos })
             return html
         })
-})
+}

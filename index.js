@@ -57,7 +57,7 @@ io.on('connection', async (socket) => {
 
     //Carga inicial productos
 
-    socket.emit('getProductos', productosApi.getAll())
+    socket.emit('getProductos', await productosApi.getAll())
 
 
     //alta de producto

@@ -1,4 +1,4 @@
-const { promises: fs } = require('fs')
+const fs = require('fs')
 
 class contenedorChat {
 
@@ -6,78 +6,113 @@ class contenedorChat {
         this.ruta = 'models/chat/mensajes.txt'
     }
 
-    async listar(id) {
-        const objs = await this.listarAll()
-        const buscado = objs.find(o => o.id == id)
-        return buscado
-    }
-
-    async listarAll() {
+    save = async (mensaje) => {
         try {
-            const objs = await fs.readFile(this.ruta, 'utf-8')
-            return JSON.parse(objs)
-        } catch (error) {
-            return []
+            const contenido = await fs.promises.readFile(this.ruta, 'utf-8')
+
+            const mensajes = JSON.parse(contenido)
+
+            let ultimoId = await this.obtenerUltimoId()
+
+            mensaje.id = ultimoId;
+
+            mensajes.push(mensaje);
+
+            await fs.promises.writeFile(this.ruta, JSON.stringify(mensajes, null, 2))
+
+            this.actualizarUltimoId()
+
+            return mensaje.id
+
+        }
+        catch (err) {
+            console.log(`Se produjo un error: ${err}`)
         }
     }
 
-    async guardar(obj) {
-        const objs = await this.listarAll()
-
-        let newId
-        if (objs.length == 0) {
-            newId = 1
-        } else {
-            newId = objs[objs.length - 1].id + 1
-        }
-
-        const newObj = { ...obj, id: newId }
-        objs.push(newObj)
+    getById = async (id) => {
 
         try {
-            await fs.writeFile(this.ruta, JSON.stringify(objs, null, 2))
-            return newId
-        } catch (error) {
-            throw new Error(`Error al guardar: ${error}`)
+
+            const contenido = await fs.promises.readFile(this.ruta, 'utf-8')
+
+            const mensajes = JSON.parse(contenido)
+
+            const mensajeBuscado = mensajes.find(prod => prod.id == id)
+
+            return mensajeBuscado
+        }
+        catch (err) {
+            console.log(`Se produjo un error: ${err}`)
         }
     }
 
-    async actualizar(elem, id) {
-        const objs = await this.listarAll()
-        const index = objs.findIndex(o => o.id == id)
-        if (index == -1) {
-            throw new Error(`Error al actualizar: no se encontró el id ${id}`)
-        } else {
-            objs[index] = elem
-            try {
-                await fs.writeFile(this.ruta, JSON.stringify(objs, null, 2))
-            } catch (error) {
-                throw new Error(`Error al borrar: ${error}`)
-            }
-        }
-    }
+    getAll = async () => {
 
-    async borrar(id) {
-        const objs = await this.listarAll()
-        const index = objs.findIndex(o => o.id == id)
-        if (index == -1) {
-            throw new Error(`Error al borrar: no se encontró el id ${id}`)
-        }
-
-        objs.splice(index, 1)
         try {
-            await fs.writeFile(this.ruta, JSON.stringify(objs, null, 2))
-        } catch (error) {
-            throw new Error(`Error al borrar: ${error}`)
+            const contenido = await fs.promises.readFile(this.ruta, 'utf-8')
+
+            const mensajes = JSON.parse(contenido)
+
+            return mensajes
+
+        }
+        catch (err) {
+            console.log(`Se produjo un error: ${err}`)
         }
     }
 
-    async borrarAll() {
+    deleteById = async (id) => {
+
         try {
-            await fs.writeFile(this.ruta, JSON.stringify([], null, 2))
-        } catch (error) {
-            throw new Error(`Error al borrar todo: ${error}`)
+            const contenido = await fs.promises.readFile(this.ruta, 'utf-8')
+
+            const productos = JSON.parse(contenido)
+
+            const productosFiltrados = productos.filter(prod => prod.id != id)
+
+            await fs.promises.writeFile(this.ruta, JSON.stringify(productosFiltrados, null, 2))
         }
+        catch (err) {
+            console.log(`Se produjo un error: ${err}`)
+        }
+    }
+
+    deleteAll = async () => {
+
+        try {
+            let productos = []
+
+            await fs.promises.writeFile(this.ruta, JSON.stringify(productos, null, 2))
+                .then(() => {
+                    console.log("Se borran los elementos")
+                })
+        }
+
+        catch (err) {
+            console.log(err)
+        }
+
+    }
+
+
+    obtenerUltimoId = async () => {
+        const contenido = fs.promises.readFile('models/chat/ultimoId.txt', 'utf-8')
+
+        return contenido
+    }
+
+    actualizarUltimoId = async () => {
+
+        let nuevoId = 0
+
+        this.obtenerUltimoId().then(
+            (resultado) => {
+
+                nuevoId = Number(resultado) + 1
+
+                fs.promises.writeFile('models/chat/ultimoId.txt', nuevoId.toString())
+            })
     }
 }
 

@@ -26,31 +26,9 @@ app.use(express.static('public'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
-//-------------------
+//--------------------
 
-//Configuracion habdlebars
-
-// app.engine(
-//     "hbs",
-//     engine({
-//         extname: ".hbs",
-//         defaultLayout: 'index.hbs',
-//         layoutsDir: path.resolve(__dirname, 'views/layouts'),
-//         partialsDir: path.resolve(__dirname, 'views/partials')
-
-//     })
-// );
-// app.set("view engine", "hbs");
-// app.set("views", ".views");
-
-//-------------------
-
-//Routes
-
-// app.use('/', apiRoutes)
-
-
-//Configurar socket
+//Configuración socket
 
 io.on('connection', async (socket) => {
     console.log('Se conecto un nuevo cliente: ', socket.id)
@@ -66,20 +44,27 @@ io.on('connection', async (socket) => {
         productosApi.save(data)
             .then((nuevoId) => {
                 console.log('Se generó el id: ', nuevoId)
-
-                io.sockets.emit('getProductos', productosApi.getAll())
             })
+            .then(async () => { io.sockets.emit('getProductos', await productosApi.getAll()) })
     });
 
     // carga inicial de mensajes
-    socket.emit('mensajes', await mensajesApi.listarAll());
+
+    const mensa = await mensajesApi.getAll()
+
+    console.log(mensa)
+
+    socket.emit('getMensajes', await mensajesApi.getAll());
 
     // actualizacion de mensajes
-    socket.on('createMensaje', async mensaje => {
-        mensaje.fyh = new Date().toLocaleString()
-        await mensajesApi.guardar(mensaje)
-        io.sockets.emit('mensajes', await mensajesApi.listarAll());
-    })
+    socket.on('createMensaje', (data) => {
+        data.fyh = new Date().toLocaleString()
+        mensajesApi.save(data)
+            .then((nuevoId) => {
+                console.log('Se generó el id mensaje: ', nuevoId)
+            })
+            .then(async () => { io.sockets.emit('getMensajes', await mensajesApi.getAll()) })
+    });
 
 
 })

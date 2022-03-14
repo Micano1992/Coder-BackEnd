@@ -60,7 +60,7 @@ function makeHtmlList(mensajes) {
         return (`
             <div style="background-color: white; padding: 10px">
                 <b style="color:blue;">${mensaje.autor}</b>
-                [<span style="color:brown;">${mensaje.fyh}</span>] :
+                [<span style="color:brown;">${mensaje.fecha}</span>] :
                 <i style="color:green;">${mensaje.texto}</i>
             </div>
         `)

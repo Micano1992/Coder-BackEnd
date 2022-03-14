@@ -1,8 +1,8 @@
 const express = require('express')
-const apiRoutes = require('./routers/index')
-const path = require('path')
 const http = require('http')
 const socketIo = require('socket.io');
+const dbconfig = require('./db/config');
+
 
 const contenedorProducto = require('./models/productos/contenedorProductos')
 const contenedorMensaje = require('./models/chat/contenedorChat')
@@ -14,8 +14,8 @@ const app = express()
 const serverHttp = http.createServer(app)
 const io = socketIo(serverHttp)
 
-const productosApi = new contenedorProducto()
-const mensajesApi = new contenedorMensaje()
+const productosApi = new contenedorProducto(dbconfig.mariaDB, 'productos')
+const mensajesApi = new contenedorMensaje(dbconfig.sqlite, 'mensajes')
 
 //-------------------
 
@@ -50,15 +50,11 @@ io.on('connection', async (socket) => {
 
     // carga inicial de mensajes
 
-    const mensa = await mensajesApi.getAll()
-
-    console.log(mensa)
-
     socket.emit('getMensajes', await mensajesApi.getAll());
 
     // actualizacion de mensajes
     socket.on('createMensaje', (data) => {
-        data.fyh = new Date().toLocaleString()
+        data.fecha = new Date().toLocaleString()
         mensajesApi.save(data)
             .then((nuevoId) => {
                 console.log('Se generó el id mensaje: ', nuevoId)

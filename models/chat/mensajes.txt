@@ -1,8 +1,0 @@
-[
-  {
-    "autor": "Matias",
-    "texto": "Buen dia",
-    "fyh": "1/3/2022 12:18:22",
-    "id": 1
-  }
-]

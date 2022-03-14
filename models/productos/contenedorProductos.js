@@ -1,120 +1,58 @@
 const fs = require('fs');
+// const dbconfig = require('../../db/config');
+let knex;
 
 class ContenedorProducto {
 
-    constructor() {
-        this.ruta = 'models/productos/productos.txt'
+    constructor(objConfig) {
+        // const knex = require('knex')(dbconfig.mariaDB);
+        knex = require('knex')(objConfig);
     }
 
 
     save = async (producto) => {
         try {
-            const contenido = await fs.promises.readFile(this.ruta, 'utf-8')
+            await knex('productos').insert(producto)
 
-            const productos = JSON.parse(contenido)
+            const ultimoId = await knex.from('productos')
+                .max('id')
 
-            let ultimoId = await this.obtenerUltimoId()
-
-            producto.id = ultimoId;
-
-            productos.push(producto);
-
-            await fs.promises.writeFile(this.ruta, JSON.stringify(productos, null, 2))
-
-            this.actualizarUltimoId()
-
-            return producto.id
+            return ultimoId
 
         }
         catch (err) {
             console.log(`Se produjo un error: ${err}`)
+            throw err
+        }
+        finally {
+            // knex.destroy()
+            console.log('Se cierra conexión')
+
         }
     }
 
-    getById = async (id) => {
-
-        try {
-
-            const contenido = await fs.promises.readFile(this.ruta, 'utf-8')
-
-            const productos = JSON.parse(contenido)
-
-            const productoBuscado = productos.find(prod => prod.id == id)
-
-            return productoBuscado
-        }
-        catch (err) {
-            console.log(`Se produjo un error: ${err}`)
-        }
-    }
 
     getAll = async () => {
-
         try {
-            const contenido = await fs.promises.readFile(this.ruta, 'utf-8')
 
-            const productos = JSON.parse(contenido)
+            console.log('Se abre conexión')
+            let data = await knex.from('productos')
+                .select('*')
 
-            return productos
+            return data
 
         }
         catch (err) {
             console.log(`Se produjo un error: ${err}`)
+            throw err
+        }
+        finally {
+            // knex.destroy();
+            console.log('Se cierra conexión');
+
         }
     }
 
-    deleteById = async (id) => {
-
-        try {
-            const contenido = await fs.promises.readFile(this.ruta, 'utf-8')
-
-            const productos = JSON.parse(contenido)
-
-            const productosFiltrados = productos.filter(prod => prod.id != id)
-
-            await fs.promises.writeFile(this.ruta, JSON.stringify(productosFiltrados, null, 2))
-        }
-        catch (err) {
-            console.log(`Se produjo un error: ${err}`)
-        }
-    }
-
-    deleteAll = async () => {
-
-        try {
-            let productos = []
-
-            await fs.promises.writeFile(this.ruta, JSON.stringify(productos, null, 2))
-                .then(() => {
-                    console.log("Se borran los elementos")
-                })
-        }
-
-        catch (err) {
-            console.log(err)
-        }
-
-    }
-
-
-    obtenerUltimoId = async () => {
-        const contenido = fs.promises.readFile('models/productos/ultimoId.txt', 'utf-8')
-
-        return contenido
-    }
-
-    actualizarUltimoId = async () => {
-
-        let nuevoId = 0
-
-        this.obtenerUltimoId().then(
-            (resultado) => {
-
-                nuevoId = Number(resultado) + 1
-
-                fs.promises.writeFile('models/productos/ultimoId.txt', nuevoId.toString())
-            })
-    }
 }
 
 module.exports = ContenedorProducto

@@ -1,119 +1,82 @@
 const fs = require('fs')
+const dbconfig = require('../../db/config');
+// const knex = require('knex')(dbconfig.sqlite);
+let knex
+let tabla
 
 class contenedorChat {
 
-    constructor() {
-        this.ruta = 'models/chat/mensajes.txt'
+    constructor(objConfig, nTabla) {
+        knex = require('knex')(objConfig);
+        tabla = nTabla
     }
+
 
     save = async (mensaje) => {
         try {
-            const contenido = await fs.promises.readFile(this.ruta, 'utf-8')
+            await knex(tabla).insert(mensaje)
 
-            const mensajes = JSON.parse(contenido)
+            const ultimoId = await knex.from(tabla)
+                .max('id')
 
-            let ultimoId = await this.obtenerUltimoId()
-
-            mensaje.id = ultimoId;
-
-            mensajes.push(mensaje);
-
-            await fs.promises.writeFile(this.ruta, JSON.stringify(mensajes, null, 2))
-
-            this.actualizarUltimoId()
-
-            return mensaje.id
+            return ultimoId
 
         }
         catch (err) {
             console.log(`Se produjo un error: ${err}`)
+            throw err
+        }
+        finally {
+            // knex.destroy()
+            console.log('Se cierra conexión')
+
         }
     }
 
-    getById = async (id) => {
 
+    getAll = async () => {
         try {
+            let data = await knex.from(tabla)
+                .select('*')
 
-            const contenido = await fs.promises.readFile(this.ruta, 'utf-8')
+            console.log(data)
+            return data
 
-            const mensajes = JSON.parse(contenido)
-
-            const mensajeBuscado = mensajes.find(prod => prod.id == id)
-
-            return mensajeBuscado
         }
         catch (err) {
             console.log(`Se produjo un error: ${err}`)
+            throw err
+        }
+        finally {
+            // knex.destroy();
+            console.log('Se cierra conexión');
+
         }
     }
+
 
     getAll = async () => {
 
         try {
-            const contenido = await fs.promises.readFile(this.ruta, 'utf-8')
 
-            const mensajes = JSON.parse(contenido)
+            console.log('Se abre conexión')
+            let data = await knex.from('mensajes')
+                .select('*')
 
-            return mensajes
+            return data
 
         }
         catch (err) {
             console.log(`Se produjo un error: ${err}`)
+            throw err
         }
-    }
+        finally {
+            // knex.destroy();
+            console.log('Se cierra conexión');
 
-    deleteById = async (id) => {
-
-        try {
-            const contenido = await fs.promises.readFile(this.ruta, 'utf-8')
-
-            const productos = JSON.parse(contenido)
-
-            const productosFiltrados = productos.filter(prod => prod.id != id)
-
-            await fs.promises.writeFile(this.ruta, JSON.stringify(productosFiltrados, null, 2))
         }
-        catch (err) {
-            console.log(`Se produjo un error: ${err}`)
-        }
-    }
-
-    deleteAll = async () => {
-
-        try {
-            let productos = []
-
-            await fs.promises.writeFile(this.ruta, JSON.stringify(productos, null, 2))
-                .then(() => {
-                    console.log("Se borran los elementos")
-                })
-        }
-
-        catch (err) {
-            console.log(err)
-        }
-
-    }
-
-
-    obtenerUltimoId = async () => {
-        const contenido = fs.promises.readFile('models/chat/ultimoId.txt', 'utf-8')
-
-        return contenido
-    }
-
-    actualizarUltimoId = async () => {
-
-        let nuevoId = 0
-
-        this.obtenerUltimoId().then(
-            (resultado) => {
-
-                nuevoId = Number(resultado) + 1
-
-                fs.promises.writeFile('models/chat/ultimoId.txt', nuevoId.toString())
-            })
     }
 }
+
 
 module.exports = contenedorChat

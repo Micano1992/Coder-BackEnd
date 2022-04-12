@@ -6,8 +6,9 @@ const apiRoutes = require('./routes/index');
 const { engine } = require('express-handlebars');
 const { ENV: { PORT } } = require('./config');
 const { normalize, schema } = require('normalizr')
-
-
+const users = require('./data/users.json')
+const MongoStore = require('connect-mongo')
+const session = require('express-session');
 
 
 // const contenedorProducto = require('./models/productos/contenedorProductos')
@@ -15,6 +16,7 @@ const { normalize, schema } = require('normalizr')
 
 
 //Instancia servidor, socket y api
+
 
 const app = express()
 const serverHttp = http.createServer(app)
@@ -24,16 +26,95 @@ const io = socketIo(serverHttp)
 // const mensajesApi = new contenedorMensaje(dbconfig.sqlite, 'mensajes')
 
 const productoControllers = require('./controllers/productosControllers')
-const chatControllers = require('./controllers/chatControllers')
+const chatControllers = require('./controllers/chatControllers');
+
+//-------------------
+
+//Middleware
+app.use(express.static('public'))
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+app.use(session({
+    name: 'sesion1',
+    secret: 'top-secret-123',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        maxAge: 10000
+    },
+    rolling: true,
+    store: MongoStore.create({
+        mongoUrl: 'mongodb+srv://Matias1992:12345@cluster0.knh5m.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
+
+    })
+
+}))
+
+//-------------------
+
+//Routes
+
+
+app.get('/', async (req, res) => {
+
+    return res.sendFile(__dirname + '/public/index.html');
+})
+
+app.post('/', (req, res) => {
+
+    console.log(req.body)
+
+    const { usuario, password } = req.body
+
+    const user = users.find(user => user.name === usuario)
+
+    if (!user) return res.redirect('/error')
+
+    req.session.user = user;
+
+    console.log("Usuario de sesion:" + req.session.user)
+
+    req.session.save((err) => {
+        if (err) {
+            console.log('Error en sesion => ', err)
+            res.redirect('/')
+        }
+    })
+
+
+    console.log(usuario)
+
+    return res.redirect('/gestionProducto');
+});
+
+app.get('/gestionProducto', (req, res) => {
+    console.log(req.session.user)
+    if (!req.session.user) {
+        return res.redirect('/')
+    }
+
+    res.render("partials/gestionProducto", { nombre: req.session.user.name })
+
+});
+
+
+
+app.get('/error', (req, res) => {
+    res.status(500).sendFile(__dirname + '/public/error.html');
+});
+
+app.get('/logout', async (req, res) => {
+
+    res.render("partials/logout", { nombre: req.session.user.name })
+
+})
+
+app.use('/', apiRoutes)
+
 
 //-------------------
 
 
-//Middleware
-
-app.use(express.static('public'))
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
 
 app.engine(
     "hbs",
@@ -46,9 +127,8 @@ app.engine(
 app.set("view engine", "hbs");
 app.set("views", "./public/views");
 
-app.use('/', apiRoutes)
-
 //--------------------
+
 
 //Configuración socket
 
@@ -84,10 +164,6 @@ io.on('connection', async (socket) => {
     const schemaMensajes = new schema.Entity('posts', { mensajes: [schemaMensaje] }, { idAttribute: 'id' })
 
     const normalizedChat = normalize({ id: 'mensajes', mensajes: chatGetAll }, schemaMensajes)
-
-
-    console.log(JSON.stringify(chatGetAll).length)
-    console.log(JSON.stringify(normalizedChat).length)
 
     const comprension = JSON.stringify(normalizedChat).length / JSON.stringify(chatGetAll).length * 100
 

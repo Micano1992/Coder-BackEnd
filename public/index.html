@@ -19,81 +19,40 @@
 
 <body>
     <div class="py-5 text-center">
-        <h1>GESTION DE PRODUCTOS</h1>
+        <h1>INGRESO APLICACIÓN</h1>
     </div>
 
     <div class="part1 container mt-3">
-        <h1>Carga de productos</h1>
 
-        <form class="needs-validation" id="formularioAlta">
+        <form class="needs-validation" id="formularioIngreso" action="/" method="POST">
             <div class="row g-3">
 
                 <div class="col-12">
-                    <label for="title" class="form-label">Descripción</label>
-                    <input name="title" type="text" class="form-control" id="title" placeholder="Calculadora" required>
+                    <label for="usuario" class="form-label">Usuario</label>
+                    <input type="text" class="form-control" id="usuario" name="usuario" required>
                     <div class="invalid-feedback">
-                        Por favor ingrese un texto válido
+                        Ingrese usuario
                     </div>
                 </div>
                 <div class="col-12">
-                    <label for="price" class="form-label">Precio</label>
-                    <input name="price" type="number" class="form-control" id="price" placeholder="16,4" required>
+                    <label for="password" class="form-label">Contraseña</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
                     <div class="invalid-feedback">
-                        Por favor ingrese un precio válido
-                    </div>
-                </div>
-                <div class="col-12">
-                    <label for="url" class="form-label">URL Imagen</label>
-                    <input name="url" type="url" class="form-control" id="url"
-                        placeholder="https://cdn3.iconfinder.com/data/icons/education-209/64/clock-stopwatch-timer-time-128.png"
-                        required>
-                    <div class="invalid-feedback">
-                        Por favor ingrese una url válida
+                        Ingrese contraseña
                     </div>
                 </div>
             </div>
 
             <br>
             <div class="text-center">
-                <button class="btn btn-secondary btn-lg col-3-lg" type="submit">Cargar producto</button>
+                <button class="btn btn-secondary btn-lg col-3-lg" type="submit">INGRESAR</button>
             </div>
         </form>
 
-        <div id="productos"></div>
-    </div>
-    <div class="part2 container mt-3">
-
-        <div class="jumbotron">
-            <h1>Chat</h1>
-            <span id="comprensionMensajes"></span>
-            <br>
-
-            <input type="text" id="inputMail" class="form-control w-50 my-2 mr-2" placeholder="Ingresá tu email">
-            <input type="text" id="inputNombre" class="form-control w-50 my-2 mr-2" placeholder="Ingresá tu nombre">
-            <input type="text" id="inputApellido" class="form-control w-50 my-2 mr-2" placeholder="Ingresá tu appelido">
-            <input type="text" id="inputEdad" class="form-control w-50 my-2 mr-2" placeholder="Ingresá tu edad">
-            <input type="text" id="inputAlias" class="form-control w-50 my-2 mr-2" placeholder="Ingresá tu alias">
-            <input type="text" id="inputAvatar" class="form-control w-50 my-2 mr-2" placeholder="Ingresá tu avatar">
-
-            <hr>
-
-
-            <form id="formPublicarMensaje" class="form-inline" autocomplete="off">
-                <div class="form-group">
-                    <input disabled id="inputMensaje" type="text" class="form-control my-2 mr-2"
-                        placeholder="Ingresá un mensaje...">
-                    <button disabled id="btnEnviar" type="submit"
-                        class="btn btn-secondary btn-lg col-3-lg">Enviar!</button>
-                </div>
-            </form>
-            <br>
-            <div id="mensajes"></div>
-        </div>
-    </div>
     </div>
 </body>
 
 <script src="socket.io/socket.io.js"></script>
-<script src="./Scripts/scripts.js"></script>
+<script src="./Scripts/script.js"></script>
 
 </html>

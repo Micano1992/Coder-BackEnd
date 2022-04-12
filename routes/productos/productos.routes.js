@@ -20,7 +20,7 @@ router.get('/productos-test', (req, res) => {
     productos.push(nProd4)
     productos.push(nProd5)
 
-    res.render("layouts/index", {
+    res.render("partials/fakerProducto", {
         productos: productos,
         hayProductos: productos.length,
         isFaker: true

@@ -96,3 +96,4 @@ inputMensaje.addEventListener('input', () => {
     const hayTexto = inputMensaje.value.length
     btnEnviar.disabled = !hayTexto
 })
+

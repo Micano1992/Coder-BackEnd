@@ -9,6 +9,7 @@ const { normalize, schema } = require('normalizr')
 const users = require('./data/users.json')
 const MongoStore = require('connect-mongo')
 const session = require('express-session');
+const passport = require('./middlewares/passport');
 
 
 // const contenedorProducto = require('./models/productos/contenedorProductos')
@@ -50,6 +51,9 @@ app.use(session({
 
 }))
 
+app.use(passport.initialize());
+app.use(passport.session());
+
 //-------------------
 
 //Routes
@@ -57,14 +61,24 @@ app.use(session({
 
 app.get('/', async (req, res) => {
 
-    return res.sendFile(__dirname + '/public/index.html');
+    const user = await req.user;
+    if (user) {
+        return res.redirect('/public/index.html');
+    }
+    else {
+        return res.sendFile(path.resolve(__dirname, '../public/login.html'));
+    }
+
+    // return res.sendFile(__dirname + '/public/index.html');
 })
 
-app.post('/', (req, res) => {
+
+
+app.post('/registro', (req, res) => {
 
     console.log(req.body)
 
-    const { usuario, password } = req.body
+    const { mail, password } = req.body
 
     const user = users.find(user => user.name === usuario)
 
@@ -98,16 +112,10 @@ app.get('/gestionProducto', (req, res) => {
 });
 
 
-
 app.get('/error', (req, res) => {
     res.status(500).sendFile(__dirname + '/public/error.html');
 });
 
-app.get('/logout', async (req, res) => {
-
-    res.render("partials/logout", { nombre: req.session.user.name })
-
-})
 
 app.use('/', apiRoutes)
 

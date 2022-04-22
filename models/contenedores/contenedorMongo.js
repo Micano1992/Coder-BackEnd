@@ -1,5 +1,15 @@
 const mongoose = require('mongoose');
 const { DB_CONFIG } = require('../../config')
+const { formatErrorObject } = require('../../utils/api.utils');
+const constants = require('../../constants/api.constants');
+
+const {
+    STATUS: {
+        INTERNAL_ERROR,
+        NOT_FOUND,
+        BAD_REQUEST,
+    }
+} = constants;
 
 class contenedorMongoose {
 
@@ -46,6 +56,18 @@ class contenedorMongoose {
 
     async deleteById(id) {
         return await this.model.deleteOne({ _id: id })
+    }
+
+    async createItem(resourceItem) {
+        try {
+            const newItem = new this.model(resourceItem);
+            await newItem.save();
+            return newItem;
+        }
+        catch (err) {
+            const newError = formatErrorObject(INTERNAL_ERROR.tag, err.message);
+            throw new Error(JSON.stringify(newError));
+        }
     }
 }
 

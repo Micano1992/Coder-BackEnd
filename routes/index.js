@@ -1,6 +1,7 @@
 const express = require('express')
 const path = require('path');
 const auth = require('../middlewares/auth');
+const config = require('../config')
 
 const authControllers = require('../controllers/auth.controllers');
 const passport = require('../middlewares/passport');
@@ -8,11 +9,13 @@ const passport = require('../middlewares/passport');
 
 const productosRoutes = require('./productos/productos.routes')
 const authRoutes = require('./auth/auth.routes')
+const randomRoute = require('./randoms/randoms.route')
 const router = express.Router()
 
 //Routes
 router.use('/api', productosRoutes)
 router.use('/api', authRoutes)
+router.use('/api', randomRoute)
 
 // router.get('/logout', async (req, res) => {
 
@@ -69,5 +72,23 @@ router.post('/ingreso', (req, res) => {
     return res.redirect('/gestionProducto');
 
 });
+
+router.get('/info', (req, res) => {
+
+    res.send(
+        {
+            'Argumentos de Entrada': config.PORT,
+            'Nombre de la plataforma': process.platform,
+            'Versión de node.js': process.version,
+            'Memoria total reservada (rss)': process.memoryUsage().rss,
+            'Path de ejecución': process.argv[1],
+            'Process id': process.id,
+            'Carpeta del proyecto': process.cwd()
+
+            // process.argv
+        }
+
+    )
+})
 
 module.exports = router;

@@ -4,7 +4,8 @@ const socketIo = require('socket.io');
 const dbconfig = require('./db/config');
 const apiRoutes = require('./routes/index');
 const { engine } = require('express-handlebars');
-const { ENV: { PORT } } = require('./config');
+// const { ENV: { PORT } } = require('./config');
+const config = require('./config');
 const { normalize, schema } = require('normalizr')
 const users = require('./data/users.json')
 const MongoStore = require('connect-mongo')
@@ -45,7 +46,8 @@ app.use(session({
     },
     rolling: true,
     store: MongoStore.create({
-        mongoUrl: 'mongodb+srv://Matias1992:12345@cluster0.knh5m.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
+        // mongoUrl: `mongodb+srv://Matias1992:12345@cluster0.knh5m.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`,
+        mongoUrl: `mongodb+srv://${config.USUARIO}:${config.PASSWORD}@cluster0.knh5m.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`,
 
     })
 
@@ -211,8 +213,8 @@ io.on('connection', async (socket) => {
 
 //Inicio servidor
 
-serverHttp.listen(PORT, () => {
-    console.log("Server is up and runnion on port ", PORT)
+serverHttp.listen(config.PORT, () => {
+    console.log("Server is up and runnion on port ", config.PORT)
 })
 
 serverHttp.on('error', (error) => { console.log(error.message) })
